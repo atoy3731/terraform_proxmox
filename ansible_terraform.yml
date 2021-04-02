@@ -2,12 +2,13 @@
 - hosts: localhost
   name: Create infrastructure with Terraforms
   vars:
-    terraform_dir: <project_location>
+    terraform_dir: /Users/adam.toy/TerraformProjects/terraform_proxmox 
  
   tasks:
     - name: Terraform Apply
       terraform:
         project_path: "{{ terraform_dir }}"
+        variables_files: "live.tfvars"
         state: present
       register: outputs
 
@@ -61,6 +62,3 @@
 
   roles: 
     - rke2
-
-
- 
