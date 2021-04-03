@@ -4,7 +4,7 @@
   when: "'localhost' not in inventory_hostname"
 
 - import_tasks: master-config.yml
-  when: "'init_master' or 'additional_masters' in group_names"
+  when: "'init_master' in group_names or 'additional_masters' in group_names"
 
 - import_tasks: agent-config.yml
   when: "'workers' in group_names"
@@ -24,16 +24,16 @@
 
 #need to add when role==master
 - import_tasks: rke2-master.yml
-  when: "'init_master' or 'additional_masters' in group_names"
+  when: "'init_master' in group_names or 'additional_masters' in group_names"
 
 - import_tasks: rke2-master-additions.yml
-  when: "'init_master' or 'additional_masters' in group_names"
+  when: "'init_master' in group_names or 'additional_masters' in group_names"
 
 - import_tasks: rke2-agent.yml
   when: "'workers' in group_names"
 
 - import_tasks: kubectl-install.yml
-  when: "'init_master' or 'additional_masters' in group_names"
+  when: "'init_master' in group_names or 'additional_masters' in group_names"
 
 - import_tasks: kubectl-config.yml
-  when: "'init_master' or 'additional_masters' in group_names"
+  when: "'init_master' in group_names or 'additional_masters' in group_names"
