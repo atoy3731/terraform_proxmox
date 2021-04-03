@@ -20,10 +20,8 @@ terraform init
 ansible-playbook -u CLOUD-INIT-USERNAME --private-key PATH-TO-YOUR-PRIVATE-KEY ansible_terraform.yml
 ```
 
-NOTE***
+***NOTE***
 
-ssh user must have passwordless auth and passwordless sudo. 
-
-cloud-init template must already be created
-
-terraform does not create the cloud-init
+* ssh user must have passwordless auth and passwordless sudo. 
+* cloud-init template must already be created
+* terraform does not create the cloud-init
