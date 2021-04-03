@@ -43,15 +43,16 @@
 
 - hosts: all
   name: Install RKE2
-  user: <ssh_user>
+  user: adam.toy
   become: yes
   gather_facts: false
  
   pre_tasks:
-    - name: Testing Connection
+    - name: Testing Connection 
       wait_for_connection:
-        delay: 60
-        timeout: 600
+        delay: 20
+        timeout: 60
+      when: "'localhost' not in inventory_hostname"
 
     - name: Testing
       debug:

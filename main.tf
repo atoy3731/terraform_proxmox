@@ -17,7 +17,7 @@ resource "proxmox_vm_qemu" "init_master" {
   desc        = "rke2-server"
   target_node = var.pve_target_node
   onboot      = "true"
-  full_clone  = "true"
+  full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
   cores       = var.rke2_server_cores
   sockets     = var.rke2_server_sockets
@@ -38,7 +38,6 @@ resource "proxmox_vm_qemu" "init_master" {
     model  = "virtio"
     bridge = var.pve_network_bridge
   }
-
 }
 
 resource "proxmox_vm_qemu" "worker1" {
@@ -46,7 +45,7 @@ resource "proxmox_vm_qemu" "worker1" {
   desc        = "rke2-worker1"
   target_node = var.pve_target_node
   onboot      = "true"
-  full_clone  = "true"
+  full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
   cores       = var.rke2_worker_cores
   sockets     = var.rke2_worker_sockets
@@ -68,10 +67,9 @@ resource "proxmox_vm_qemu" "worker1" {
     bridge = var.pve_network_bridge
   }
 
-  depends_on = [
+    depends_on = [
     proxmox_vm_qemu.init_master,
   ]
-
 }
 
 resource "proxmox_vm_qemu" "worker2" {
@@ -79,7 +77,7 @@ resource "proxmox_vm_qemu" "worker2" {
   desc        = "rke2-worker2"
   target_node = var.pve_target_node
   onboot      = "true"
-  full_clone  = "true"
+  full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
   cores       = var.rke2_worker_cores
   sockets     = var.rke2_worker_sockets
@@ -104,7 +102,6 @@ resource "proxmox_vm_qemu" "worker2" {
   depends_on = [
     proxmox_vm_qemu.worker1,
   ]
-
 }
 
 resource "proxmox_vm_qemu" "worker3" {
@@ -112,7 +109,7 @@ resource "proxmox_vm_qemu" "worker3" {
   desc        = "rke2-worker3"
   target_node = var.pve_target_node
   onboot      = "true"
-  full_clone  = "true"
+  full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
   cores       = var.rke2_worker_cores
   sockets     = var.rke2_worker_sockets
@@ -137,7 +134,6 @@ resource "proxmox_vm_qemu" "worker3" {
   depends_on = [
     proxmox_vm_qemu.worker2,
   ]
-
 }
 
 output "init_master_address" {

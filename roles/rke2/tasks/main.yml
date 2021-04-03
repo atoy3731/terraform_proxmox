@@ -1,6 +1,7 @@
 ---
 
 - import_tasks: yum.yml
+  when: "'localhost' not in inventory_hostname"
 
 - import_tasks: master-config.yml
   when: "'init_master' in group_names"
@@ -17,10 +18,12 @@
     name: firewalld
     state: stopped
     enabled: no
+  when: "'localhost' not in inventory_hostname"
 
 # CIS mode
 - import_tasks: cis-profile.yml
   when: rke2_cis_mode
+  when: "'localhost' not in inventory_hostname"
 
 #need to add when role==master
 - import_tasks: rke2-master.yml

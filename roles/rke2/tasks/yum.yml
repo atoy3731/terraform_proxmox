@@ -14,6 +14,10 @@
 #|________________________________________________________|
 ---
 
+- name: HOSTNAME | Set hostname to dashed IP
+  hostname: 
+    name: "{{ inventory_hostname  | replace('.','-') }}"
+
 - name: add the rke2-common repo
   yum_repository:
     name: rke2-common

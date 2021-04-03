@@ -61,6 +61,12 @@ variable pve_storage_name {
     description = "Name of PVE storage on target node"
 }
 
+variable pve_full_clone {
+    type        = bool
+    default     = true
+    description = "Boolean for full vs linked clone"
+}
+
 ####################
 # Server variables #
 ####################

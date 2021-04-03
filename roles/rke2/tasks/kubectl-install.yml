@@ -1,18 +1,14 @@
 ---
-- name: Adding Kubernetes repository
-  yum_repository:
-    name: Kubernetes
-    description: repo for kubernetes
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-    gpgcheck: true
-    enabled: true
-    repo_gpgcheck: true
-    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-
-- name: Install kubectl
+- name: Install curl
   yum:
-    name: kubectl
+    name: curl
     state: latest
     update_cache: true
 
-    
+- name: Download kubectl
+  args:
+    warn: false
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv kubectl /usr/local/bin
