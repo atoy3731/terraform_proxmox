@@ -5,7 +5,7 @@
 
 ### Creating an RKE2 Cluster in Proxmox
 
-1. Copy `live.example.tfvars` to `live.tfvars` and update it with your values.
+1. Copy `live.example.tfvars` to `live.tfvars` and update it with your values (look at the comments in the file for more info).
 2. Update `ansible_terraform.yml` with the path to this repository on your computer.
 ```bash
 - hosts: localhost
