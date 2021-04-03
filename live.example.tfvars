@@ -10,7 +10,7 @@ cloud_init_user = ""  # Name for your cloud-init user (enabled for SSH)
 #################
 
 pve_host = ""  # Hostname for Proxmox to connect to.
-pve_target_node = ""  # Name of Proxmox node in cluster to deploy RKE2 to.
+pve_target_nodes = []  # Name of Proxmox nodes in cluster to deploy RKE2 to (ie. [ "node1", "node2" ]).
 pve_template_name = ""  # Name of cloud-init enabled PVE template.
 pve_storage_name = ""  # Name of PVE storage.
 
