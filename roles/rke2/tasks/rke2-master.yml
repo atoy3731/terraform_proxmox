@@ -30,7 +30,6 @@
     enabled: yes
   register: systemd_rke
 
-
 #add when last changed
 - name: Pausing for build
   pause:

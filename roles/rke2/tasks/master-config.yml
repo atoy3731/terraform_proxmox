@@ -13,13 +13,21 @@
     recurse: yes
 
     
-- name: Create Config File 
+- name: Create Init Master Config File 
+  ansible.builtin.template:
+    src: ../templates/init_master_config.yaml.j2
+    dest: /etc/rancher/rke2/config.yaml
+    owner: root
+    group: root
+    mode: 0600
+  when: "'init_master' in group_names"
+
+- name: Create Additional Master Config File 
   ansible.builtin.template:
     src: ../templates/master_config.yaml.j2
     dest: /etc/rancher/rke2/config.yaml
     owner: root
     group: root
     mode: 0600
-
-
+  when: "'additional_masters' in group_names"
 

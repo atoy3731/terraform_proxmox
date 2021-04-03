@@ -6,16 +6,26 @@ terraform {
   }
 }
 
+resource "random_shuffle" "rke2_server_target_nodes" {
+  input        = var.pve_target_nodes
+  result_count = var.rke2_server_count
+}
+
+resource "random_shuffle" "rke2_worker_target_nodes" {
+  input        = var.pve_target_nodes
+  result_count = var.rke2_worker_count
+}
+
 provider "proxmox" {
   pm_api_url  = "https://${var.pve_host}:${var.pve_port}/api2/json"
   pm_user     = "${var.pve_user}@pam"
   pm_password = var.pve_password
 }
 
-resource "proxmox_vm_qemu" "init_master" {
-  name        = "rke2-server"
-  desc        = "rke2-server"
-  target_node = var.pve_target_node
+resource "proxmox_vm_qemu" "init-master" {
+  name        = "rke2-server0"
+  desc        = "rke2-server0"
+  target_node = random_shuffle.rke2_server_target_nodes.result[0]
   onboot      = "true"
   full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
@@ -40,16 +50,18 @@ resource "proxmox_vm_qemu" "init_master" {
   }
 }
 
-resource "proxmox_vm_qemu" "worker1" {
-  name        = "rke2-worker1"
-  desc        = "rke2-worker1"
-  target_node = var.pve_target_node
+resource "proxmox_vm_qemu" "additional-masters" {
+  count = var.rke2_server_count > 1 ? (var.rke2_server_count - 1) : 0
+
+  name        = "rke2-server${count.index + 1}"
+  desc        = "rke2-server${count.index + 1}"
+  target_node = random_shuffle.rke2_server_target_nodes.result[count.index + 1]
   onboot      = "true"
   full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
-  cores       = var.rke2_worker_cores
-  sockets     = var.rke2_worker_sockets
-  memory      = var.rke2_worker_memory
+  cores       = var.rke2_server_cores
+  sockets     = var.rke2_server_sockets
+  memory      = var.rke2_server_memory
   agent       = 1
   ipconfig0   = "ip=dhcp"
   ciuser      = var.cloud_init_user
@@ -58,7 +70,7 @@ resource "proxmox_vm_qemu" "worker1" {
   disk {
     type    = "scsi"
     storage = var.pve_storage_name
-    size    = "${var.rke2_worker_storage_size}G"
+    size    = "${var.rke2_server_storage_size}G"
   }
 
   # Set the network
@@ -66,16 +78,14 @@ resource "proxmox_vm_qemu" "worker1" {
     model  = "virtio"
     bridge = var.pve_network_bridge
   }
-
-    depends_on = [
-    proxmox_vm_qemu.init_master,
-  ]
 }
 
-resource "proxmox_vm_qemu" "worker2" {
-  name        = "rke2-worker2"
-  desc        = "rke2-worker2"
-  target_node = var.pve_target_node
+resource "proxmox_vm_qemu" "workers" {
+  count = var.rke2_worker_count
+
+  name        = "rke2-worker${count.index}"
+  desc        = "rke2-worker${count.index}"
+  target_node = random_shuffle.rke2_worker_target_nodes.result[count.index]
   onboot      = "true"
   full_clone  = var.pve_full_clone
   clone       = var.pve_template_name
@@ -98,56 +108,16 @@ resource "proxmox_vm_qemu" "worker2" {
     model  = "virtio"
     bridge = var.pve_network_bridge
   }
-
-  depends_on = [
-    proxmox_vm_qemu.worker1,
-  ]
-}
-
-resource "proxmox_vm_qemu" "worker3" {
-  name        = "rke2-worker3"
-  desc        = "rke2-worker3"
-  target_node = var.pve_target_node
-  onboot      = "true"
-  full_clone  = var.pve_full_clone
-  clone       = var.pve_template_name
-  cores       = var.rke2_worker_cores
-  sockets     = var.rke2_worker_sockets
-  memory      = var.rke2_worker_memory
-  agent       = 1
-  ipconfig0   = "ip=dhcp"
-  ciuser      = var.cloud_init_user
-  sshkeys     = var.cloud_init_ssh_key
-
-  disk {
-    type    = "scsi"
-    storage = var.pve_storage_name
-    size    = "${var.rke2_worker_storage_size}G"
-  }
-
-  # Set the network
-  network {
-    model  = "virtio"
-    bridge = var.pve_network_bridge
-  }
-
-  depends_on = [
-    proxmox_vm_qemu.worker2,
-  ]
 }
 
 output "init_master_address" {
-  value = proxmox_vm_qemu.init_master.ssh_host
+  value = proxmox_vm_qemu.init-master.ssh_host
 }
 
-output "worker1_address" {
-  value = proxmox_vm_qemu.worker1.ssh_host
+output "additional_master_addresses" {
+  value = ["${proxmox_vm_qemu.additional-masters.*.ssh_host}"]
 }
 
-output "worker2_address" {
-  value = proxmox_vm_qemu.worker2.ssh_host
-}
-
-output "worker3_address" {
-  value = proxmox_vm_qemu.worker3.ssh_host
+output "worker_addresses" {
+  value = ["${proxmox_vm_qemu.workers.*.ssh_host}"]
 }

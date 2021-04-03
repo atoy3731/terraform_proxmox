@@ -40,9 +40,9 @@ variable pve_password {
     # sensitive   = true # Enable with TF 0.14 and experimentals enabled
 }
 
-variable pve_target_node {
-    type        = string
-    description = "Name of the PVE node to target for deployment"
+variable pve_target_nodes {
+    type        = list(string)
+    description = "Names of the PVE nodes to target for deployment. Will randomly assign workloads to them. No guarantee of things being spread out."
 }
 
 variable pve_network_bridge {
@@ -71,6 +71,12 @@ variable pve_full_clone {
 # Server variables #
 ####################
 
+variable rke2_server_count {
+    type        = number
+    default     = 1
+    description = "Number of server nodes"
+}
+
 variable rke2_server_memory {
     type        = number
     default     = 2048
@@ -98,6 +104,12 @@ variable rke2_server_storage_size {
 ####################
 # Worker variables #
 ####################
+
+variable rke2_worker_count {
+    type        = number
+    default     = 3
+    description = "Number of worker nodes"
+}
 
 variable rke2_worker_memory {
     type        = number

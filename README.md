@@ -1,3 +1,8 @@
+### Prereqs
+
+1. You need a CentOS/RHEL PVE template with cloud-init installed.
+2. (Multiple target nodes) Your template needs to exist on every single node with the same name.
+
 ### Creating an RKE2 Cluster in Proxmox
 
 1. Copy `live.example.tfvars` to `live.tfvars` and update it with your values.

@@ -16,33 +16,51 @@
       debug:
         msg: "{{ outputs }}"
  
-    - name: Create Master Group
+    - name: Create Init Master Group
       add_host: 
         name: "{{ outputs.outputs.init_master_address.value }}"
         groups: init_master
 
-    - name: Create Worker Group
+    - name: Create Additional Master Group
       add_host: 
-        name: "{{ outputs.outputs.worker1_address.value }}"
-        groups: workers
+        name: "{{ item }}"
+        groups: additional_masters
+      with_items: "{{ outputs.outputs.additional_master_addresses.value }}"
 
     - name: Create Worker Group
       add_host: 
-        name: "{{ outputs.outputs.worker2_address.value }}"
+        name: "{{ item }}"
         groups: workers
-      
-
-    - name: Create Worker Group
-      add_host: 
-        name: "{{ outputs.outputs.worker3_address.value }}"
-        groups: workers
+      with_items: "{{ outputs.outputs.worker_addresses.value }}"
 
     - name: debug
       debug:
         msg: "{{ groups }}"
 
-- hosts: all
-  name: Install RKE2
+- hosts: init_master
+  name: Install RKE2 (Init Master)
+  become: yes
+  gather_facts: false
+ 
+  pre_tasks:
+    - name: Testing Connection 
+      wait_for_connection:
+        delay: 20
+        timeout: 60
+
+    - name: Testing
+      debug:
+        msg: "{{ init_master }}"
+
+    - debug:
+        var=hostvars[inventory_hostname]
+
+  roles: 
+    - rke2
+
+- hosts: additional_masters
+  name: Install RKE2 (Additional Masters)
+  serial: 1
   become: yes
   gather_facts: false
  
@@ -53,9 +71,23 @@
         timeout: 60
       when: "'localhost' not in inventory_hostname"
 
-    - name: Testing
-      debug:
-        msg: "{{ init_master }}"
+    - debug:
+        var=hostvars[inventory_hostname]
+
+  roles: 
+    - rke2
+
+- hosts: workers
+  name: Install RKE2 (Workers)
+  become: yes
+  gather_facts: false
+ 
+  pre_tasks:
+    - name: Testing Connection 
+      wait_for_connection:
+        delay: 20
+        timeout: 60
+      when: "'localhost' not in inventory_hostname"
 
     - debug:
         var=hostvars[inventory_hostname]
