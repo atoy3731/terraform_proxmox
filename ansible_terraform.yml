@@ -43,7 +43,6 @@
 
 - hosts: all
   name: Install RKE2
-  user: adam.toy
   become: yes
   gather_facts: false
  

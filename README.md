@@ -11,7 +11,7 @@ terraform init
 4. Run Ansible to start the terraform
 
 ```bash
-ansible-playbook ansible_terraform.yml
+ansible-playbook -u CLOUD-INIT-USERNAME --private-key PATH-TO-YOUR-PRIVATE-KEY ansible_terraform.yml
 ```
 
 NOTE***
