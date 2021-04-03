@@ -2,6 +2,12 @@
 
 1. Copy `live.example.tfvars` to `live.tfvars` and update it with your values.
 2. Update `ansible_terraform.yml` with the path to this repository on your computer.
+```bash
+- hosts: localhost
+  name: Create infrastructure with Terraforms
+  vars:
+    terraform_dir: /path/to/this/repo/locally
+``` 
 
 3. Init terraform 
 ```bash
